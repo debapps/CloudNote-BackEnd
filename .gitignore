@@ -1,0 +1,8 @@
+# Node Modules
+node_modules
+
+# Keep environment variables out of version control
+.env
+
+# Mac files.
+.DS_Store
