@@ -29,7 +29,7 @@ router.post(
     body("email", "Your email is required.").isEmail(),
     body("password", "Please use a strong password!").isStrongPassword(),
     async (req, res) => {
-        // Finds the validation errors in this request and wraps them in an object with handy functions
+        // Finds the validation errors in this request and return any error message.
         let errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(403).json({ message: errors.array()[0].msg });
@@ -39,7 +39,7 @@ router.post(
         const { email, password } = req.body;
 
         try {
-            // Check if there is any user with same email id in the database.
+            // Check if there is any user with same email id in the database. In that case show error.
             const user = await prisma.users.findUnique({
                 where: {
                     email,
@@ -63,6 +63,72 @@ router.post(
             return res
                 .status(200)
                 .json({ message: "User is created successfully." });
+        } catch (error) {
+            return res.status(500).json({ message: error.message });
+        }
+    }
+);
+
+// API Route: /api/auth/login
+// Method: POST
+// Function: Enables login of a user with email and password as input request data.
+
+router.post(
+    "/login",
+    body("email", "Please enter a valid email.").isEmail(),
+    body("password", "Please enter your password properly").isLength({
+        min: 1,
+    }),
+    async (req, res) => {
+        // Finds the validation errors in this request and return any error message.
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(403).json({ message: errors.array()[0].msg });
+        }
+
+        // Get the request email and password from the request body.
+        const { email, password } = req.body;
+
+        try {
+            // Check if the user email already exists or not.
+            const user = await prisma.users.findUnique({
+                where: {
+                    email,
+                },
+                select: {
+                    email: true,
+                    password: true,
+                    firstName: true,
+                },
+            });
+
+            // If there is no user with the email, show error.
+            if (!user) {
+                return res
+                    .status(401)
+                    .json({ message: "You are NOT authenticated." });
+            }
+
+            // Compare the password hash from DB with the user input password. If not matching, show error.
+            const match = bcrypt.compareSync(password, user.password);
+
+            if (!match) {
+                return res
+                    .status(401)
+                    .json({ message: "You are NOT authenticated." });
+            }
+
+            // Create the JSON Web Token using email.
+            const JWToken = jwt.sign(
+                {
+                    data: email,
+                },
+                secretKey,
+                { expiresIn: "1h" }
+            );
+
+            // Send the JSON Web token as response.
+            return res.status(200).json({ message: JWToken });
         } catch (error) {
             return res.status(500).json({ message: error.message });
         }

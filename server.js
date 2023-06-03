@@ -10,8 +10,8 @@ app.use(express.json());
 app.use(cors());
 
 // Available Routes.
-// app.use("/api/note", require("./routes/notes"));
 app.use("/api/auth", require("./routes/auth"));
+// app.use("/api/note", require("./routes/notes"));
 
 // Listening to the application port.
 const port = process.env.PORT;
