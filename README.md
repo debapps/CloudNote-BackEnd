@@ -9,5 +9,5 @@ This repository is the backend portion of the CloudNote application. The backend
 ## Environment Variables
 
 -   PORT: Port number of the backend application to listen.
--   SECRET_KEY: Secret key used for password hashing.
+-   JWT_SECRET_KEY: Secret key used for creating JSON Web Token.
 -   DATABASE_URL: MongoDB URL to connect.

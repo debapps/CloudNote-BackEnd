@@ -9,7 +9,7 @@ const prismaClient = require("@prisma/client");
 const prisma = new prismaClient.PrismaClient();
 
 // Get the secret key.
-const secretKey = process.env.SECRET_KEY;
+const secretKey = process.env.JWT_SECRET_KEY;
 
 // Generate salt for hashing.
 const salt = bcrypt.genSaltSync(10);
