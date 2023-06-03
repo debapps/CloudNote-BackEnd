@@ -2,7 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
-var jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
+const getEmailByToken = require("../middleware/getEmail");
 const prismaClient = require("@prisma/client");
 
 // Initialize the prisma client.
@@ -32,7 +33,7 @@ router.post(
         // Finds the validation errors in this request and return any error message.
         let errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(403).json({ message: errors.array()[0].msg });
+            return res.status(403).json({ data: errors.array()[0].msg });
         }
 
         // Get the request email and password from the request body.
@@ -49,7 +50,7 @@ router.post(
             if (user) {
                 return res
                     .status(409)
-                    .json({ message: "User is already exists." });
+                    .json({ data: "User is already exists." });
             }
 
             // Hash the password with the salt.
@@ -62,9 +63,9 @@ router.post(
             // Send the success response.
             return res
                 .status(200)
-                .json({ message: "User is created successfully." });
+                .json({ data: "User is created successfully." });
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            return res.status(500).json({ data: error.message });
         }
     }
 );
@@ -83,7 +84,7 @@ router.post(
         // Finds the validation errors in this request and return any error message.
         let errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(403).json({ message: errors.array()[0].msg });
+            return res.status(403).json({ data: errors.array()[0].msg });
         }
 
         // Get the request email and password from the request body.
@@ -106,7 +107,7 @@ router.post(
             if (!user) {
                 return res
                     .status(401)
-                    .json({ message: "You are NOT authenticated." });
+                    .json({ data: "You are NOT authenticated." });
             }
 
             // Compare the password hash from DB with the user input password. If not matching, show error.
@@ -115,7 +116,7 @@ router.post(
             if (!match) {
                 return res
                     .status(401)
-                    .json({ message: "You are NOT authenticated." });
+                    .json({ data: "You are NOT authenticated." });
             }
 
             // Create the JSON Web Token using email.
@@ -128,11 +129,42 @@ router.post(
             );
 
             // Send the JSON Web token as response.
-            return res.status(200).json({ message: JWToken });
+            return res.status(200).json({ data: JWToken });
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            return res.status(500).json({ data: error.message });
         }
     }
 );
+
+// API Route: /api/auth/userdetails
+// Method: GET
+// Function: Get the user details from the Authorization bearer token.
+
+router.get("/userdetails", getEmailByToken, async (req, res) => {
+    try {
+        // Get the user details from the email.
+        const user = await prisma.users.findUnique({
+            where: {
+                email: req.email,
+            },
+            select: {
+                email: true,
+                firstName: true,
+                lastName: true,
+                gender: true,
+                birthDate: true,
+            },
+        });
+
+        if (!user) {
+            return res.status(404).json({ data: "User does not exists." });
+        }
+
+        // Returns the response.
+        return res.status(200).json({ data: user });
+    } catch (error) {
+        return res.status(500).json({ data: err.message });
+    }
+});
 
 module.exports = router;
