@@ -138,7 +138,7 @@ router.post(
 
 // API Route: /api/auth/userdetails
 // Method: GET
-// Function: Get the user details from the Authorization bearer token.
+// Function: Fetches the user details from the Authorization bearer token.
 
 router.get("/userdetails", getEmailByToken, async (req, res) => {
     try {
