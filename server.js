@@ -11,7 +11,7 @@ app.use(cors());
 
 // Available Routes.
 app.use("/api/auth", require("./routes/auth"));
-// app.use("/api/note", require("./routes/notes"));
+app.use("/api/note", require("./routes/note"));
 
 // Listening to the application port.
 const port = process.env.PORT;
