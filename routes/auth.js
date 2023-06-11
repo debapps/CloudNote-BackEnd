@@ -100,6 +100,9 @@ router.post(
                     email: true,
                     password: true,
                     firstName: true,
+                    lastName: true,
+                    gender: true,
+                    birthDate: true,
                 },
             });
 
@@ -128,8 +131,16 @@ router.post(
                 { expiresIn: "1h" }
             );
 
+            // Create the user details.
+            const userdetails = {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                gender: user.gender,
+                birthDate: user.birthDate,
+            };
+
             // Send the JSON Web token as response.
-            return res.status(200).json({ data: JWToken });
+            return res.status(200).json({ data: { JWToken, userdetails } });
         } catch (error) {
             return res.status(500).json({ data: error.message });
         }
@@ -140,31 +151,31 @@ router.post(
 // Method: GET
 // Function: Fetches the user details from the Authorization bearer token.
 
-router.get("/userdetails", getEmailByToken, async (req, res) => {
-    try {
-        // Get the user details from the email.
-        const user = await prisma.users.findUnique({
-            where: {
-                email: req.email,
-            },
-            select: {
-                email: true,
-                firstName: true,
-                lastName: true,
-                gender: true,
-                birthDate: true,
-            },
-        });
+// router.get("/userdetails", getEmailByToken, async (req, res) => {
+//     try {
+//         // Get the user details from the email.
+//         const user = await prisma.users.findUnique({
+//             where: {
+//                 email: req.email,
+//             },
+//             select: {
+//                 email: true,
+//                 firstName: true,
+//                 lastName: true,
+//                 gender: true,
+//                 birthDate: true,
+//             },
+//         });
 
-        if (!user) {
-            return res.status(404).json({ data: "User does not exists." });
-        }
+//         if (!user) {
+//             return res.status(404).json({ data: "User does not exists." });
+//         }
 
-        // Returns the response.
-        return res.status(200).json({ data: user });
-    } catch (error) {
-        return res.status(500).json({ data: err.message });
-    }
-});
+//         // Returns the response.
+//         return res.status(200).json({ data: user });
+//     } catch (error) {
+//         return res.status(500).json({ data: err.message });
+//     }
+// });
 
 module.exports = router;
