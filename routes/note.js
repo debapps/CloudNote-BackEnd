@@ -32,6 +32,10 @@ router.post(
             email,
         } = req;
 
+        // Create the unique slug.
+        const ms = Date.now();
+        const slug = `${title}-${ms}`;
+
         try {
             // Get the user ID from the email.
             const user = await prisma.users.findUnique({
@@ -46,10 +50,6 @@ router.post(
             if (!user) {
                 return res.status(404).json({ data: "User does not exists!" });
             }
-
-            // Create the unique slug.
-            const ms = Date.now();
-            const slug = `${title}-${ms}`;
 
             // Construct Note data.
             const noteData = {
@@ -78,33 +78,17 @@ router.post(
 
 // API Route: /api/note/allnotes
 // Method: GET
-// Function: Fetches all the saved notes from database to the logged-in user dashboard.
+// Function: Fetches all the saved notes from database to the user dashboard.
 
-router.get("/allnotes", getEmailByToken, async (req, res) => {
+router.get("/allnotes", async (req, res) => {
     try {
-        // Get the user ID from the email.
-        const user = await prisma.users.findUnique({
-            where: {
-                email: req.email,
-            },
-            select: {
-                id: true,
-            },
-        });
-
-        if (!user) {
-            return res.status(404).json({ data: "User does not exists!" });
-        }
-
-        // Fetches all the notes from the user id.
+        // Fetches all the notes from the database.
         const allNotes = await prisma.notes.findMany({
             select: {
                 slug: true,
                 title: true,
                 content: true,
-            },
-            where: {
-                userID: user.id,
+                userID: true,
             },
         });
 
@@ -186,10 +170,8 @@ router.put("/update/:slug", getEmailByToken, async (req, res) => {
     const {
         email,
         params: { slug },
+        body: { title, content },
     } = req;
-
-    // Get the content of the request body.
-    const { title, content } = req.body;
 
     // Create the updated note data object.
     let data = {};

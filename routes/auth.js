@@ -97,6 +97,7 @@ router.post(
                     email,
                 },
                 select: {
+                    id: true,
                     email: true,
                     password: true,
                     firstName: true,
@@ -133,8 +134,10 @@ router.post(
 
             // Create the user details.
             const userdetails = {
+                id: user.id,
                 firstName: user.firstName,
                 lastName: user.lastName,
+                email: user.email,
                 gender: user.gender,
                 birthDate: user.birthDate,
             };
@@ -146,36 +149,5 @@ router.post(
         }
     }
 );
-
-// API Route: /api/auth/userdetails
-// Method: GET
-// Function: Fetches the user details from the Authorization bearer token.
-
-// router.get("/userdetails", getEmailByToken, async (req, res) => {
-//     try {
-//         // Get the user details from the email.
-//         const user = await prisma.users.findUnique({
-//             where: {
-//                 email: req.email,
-//             },
-//             select: {
-//                 email: true,
-//                 firstName: true,
-//                 lastName: true,
-//                 gender: true,
-//                 birthDate: true,
-//             },
-//         });
-
-//         if (!user) {
-//             return res.status(404).json({ data: "User does not exists." });
-//         }
-
-//         // Returns the response.
-//         return res.status(200).json({ data: user });
-//     } catch (error) {
-//         return res.status(500).json({ data: err.message });
-//     }
-// });
 
 module.exports = router;

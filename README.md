@@ -18,7 +18,6 @@ This repository is the backend portion of the CloudNote application. The backend
 
 -   **/api/auth/signup:** Adds a new user into the database. Method: _POST_.
 -   **/api/auth/login:** Enables login of a user with email and password as input request data. Method: _POST_.
--   **/api/auth/userdetails:** Fetches the user details from the Authorization bearer token. Method: _GET_.
 
 ### Note Routes (CRUD operations)
 
@@ -27,8 +26,12 @@ This repository is the backend portion of the CloudNote application. The backend
 -   **/api/note/delete/:slug:** Deletes the note specified by the slug by the logged-in user. Method: _DELETE_.
 -   **/api/note/update/:slug:** Updates the content and title of the note specified by the slug by the logged-in user. Method: _PUT_.
 
-## Hosting URL
+## Production Hosting URL
 
 The REST API is roasted on the following URL:
 
 > **https://cloudnote-backend-api.onrender.com**
+
+## Test URL
+
+> **http://localhost:3001/**
