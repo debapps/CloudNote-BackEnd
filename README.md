@@ -21,10 +21,10 @@ This repository is the backend portion of the CloudNote application. The backend
 
 ### Note Routes (CRUD operations)
 
--   **/api/note/addnote:** Adds a new note in the logged-in user dashboard. Method: _POST_.
--   **/api/note/allnotes:** Fetches all the saved notes from database to the logged-in user dashboard. Method: _GET_.
--   **/api/note/delete/:slug:** Deletes the note specified by the slug by the logged-in user. Method: _DELETE_.
--   **/api/note/update/:slug:** Updates the content and title of the note specified by the slug by the logged-in user. Method: _PUT_.
+-   **/api/note/notes:** Fetches all the saved notes from database to the logged-in user dashboard. Method: _GET_.
+-   **/api/note:** Adds a new note in the logged-in user dashboard. Method: _POST_. Authentication header is required with bearer JWT.
+-   **/api/note/:slug:** Deletes the note specified by the slug by the logged-in user. Method: _DELETE_. Authentication header is required with bearer JWT.
+-   **/api/note/:slug:** Updates the content and title of the note specified by the slug by the logged-in user. Method: _PUT_. Authentication header is required with bearer JWT.
 
 ## Production Hosting URL
 

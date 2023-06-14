@@ -10,12 +10,12 @@ const router = express.Router();
 // Initialize the prisma client.
 const prisma = new prismaClient.PrismaClient();
 
-// API Route: /api/note/addnote
+// API Route: /api/note
 // Method: POST
 // Function: Adds a new note in the logged-in user dashboard.
 
 router.post(
-    "/addnote",
+    "/",
     body("title", "Please enter note title!").isLength({ min: 1 }),
     body("content", "Please enter note content!").isLength({ min: 1 }),
     getEmailByToken,
@@ -76,11 +76,11 @@ router.post(
     }
 );
 
-// API Route: /api/note/allnotes
+// API Route: /api/note/notes
 // Method: GET
 // Function: Fetches all the saved notes from database to the user dashboard.
 
-router.get("/allnotes", async (req, res) => {
+router.get("/notes", async (req, res) => {
     try {
         // Fetches all the notes from the database.
         const allNotes = await prisma.notes.findMany({
@@ -99,11 +99,11 @@ router.get("/allnotes", async (req, res) => {
     }
 });
 
-// API Route: /api/note/delete/[slug]
+// API Route: /api/note/[slug]
 // Method: DELETE
 // Function: Deletes the note specified by the slug by the logged-in user.
 
-router.delete("/delete/:slug", getEmailByToken, async (req, res) => {
+router.delete("/:slug", getEmailByToken, async (req, res) => {
     // Get the request parameter and user email.
     const {
         email,
@@ -161,11 +161,11 @@ router.delete("/delete/:slug", getEmailByToken, async (req, res) => {
     }
 });
 
-// API Route: /api/note/update/[slug]
+// API Route: /api/note/[slug]
 // Method: PUT
 // Function: Updates the content and title of the note specified by the slug by the logged-in user.
 
-router.put("/update/:slug", getEmailByToken, async (req, res) => {
+router.put("/:slug", getEmailByToken, async (req, res) => {
     // Get the request parameter and user email.
     const {
         email,
