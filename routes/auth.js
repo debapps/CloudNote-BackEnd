@@ -23,8 +23,7 @@ const router = express.Router();
 // Function: Adds a new user into the database.
 router.post(
     "/signup",
-    body("firstName", "First Name is required!").isLength({ min: 1 }),
-    body("lastName", "Last Name is required!").isLength({ min: 1 }),
+    body("name", "Name is required!").isLength({ min: 1 }),
     body("gender", "Please provide your sex.").isIn(["M", "F", "O"]),
     body("birthDate", "Please enter your Date for Birth.").isDate(),
     body("email", "Your email is required.").isEmail(),
@@ -100,8 +99,7 @@ router.post(
                     id: true,
                     email: true,
                     password: true,
-                    firstName: true,
-                    lastName: true,
+                    name: true,
                     gender: true,
                     birthDate: true,
                 },
@@ -135,15 +133,15 @@ router.post(
             // Create the user details.
             const userdetails = {
                 id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
+                name: user.name,
                 email: user.email,
                 gender: user.gender,
                 birthDate: user.birthDate,
+                accessToken: JWToken,
             };
 
             // Send the JSON Web token as response.
-            return res.status(200).json({ data: { JWToken, userdetails } });
+            return res.status(200).json({ data: { ...userdetails } });
         } catch (error) {
             return res.status(500).json({ data: error.message });
         }

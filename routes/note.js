@@ -78,18 +78,54 @@ router.post(
 
 // API Route: /api/note/notes
 // Method: GET
-// Function: Fetches all the saved notes from database to the user dashboard.
+// Function: Fetches all the saved notes for the logged in user to the user dashboard.
 
-router.get("/notes", async (req, res) => {
+router.get("/notes", getEmailByToken, async (req, res) => {
+    // Get the user email.
+    const { email } = req;
+
     try {
-        // Fetches all the notes from the database.
+        // Get the user ID from the email.
+        const user = await prisma.users.findUnique({
+            where: {
+                email,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (!user) {
+            return res.status(404).json({ data: "User does not exists!" });
+        }
+
+        // Fetches all the notes from the user id.
         const allNotes = await prisma.notes.findMany({
             select: {
                 slug: true,
                 title: true,
                 content: true,
-                userID: true,
+                updatedAt: true,
             },
+            where: {
+                userID: user.id,
+            },
+        });
+
+        // Sort the notes by the updatedAt, with recent stories come first.
+        allNotes.sort((s1, s2) => {
+            // Convert the updatedAt timestamps to milliseconds.
+            const ms1 = Date.parse(s1.updatedAt);
+            const ms2 = Date.parse(s2.updatedAt);
+
+            // Compare the milliseconds. Sorts the notes with recent updates come first.
+            if (ms1 < ms2) {
+                return 1;
+            } else if (ms1 > ms2) {
+                return -1;
+            } else {
+                return 0;
+            }
         });
 
         // Send the notes as response.
