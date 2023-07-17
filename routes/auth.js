@@ -132,7 +132,6 @@ router.post(
 
             // Create the user details.
             const userdetails = {
-                id: user.id,
                 name: user.name,
                 email: user.email,
                 gender: user.gender,
