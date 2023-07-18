@@ -136,6 +136,64 @@ router.get("/notes", getEmailByToken, async (req, res) => {
 });
 
 // API Route: /api/note/[slug]
+// Method: GET
+// Function: Fetch a note specified by the slug by the logged-in user.
+
+router.get("/:slug", getEmailByToken, async (req, res) => {
+    // Get the request parameter and user email.
+    const {
+        email,
+        params: { slug },
+    } = req;
+
+    try {
+        // Get the user ID from the email.
+        const user = await prisma.users.findUnique({
+            where: {
+                email,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (!user) {
+            return res.status(404).json({ data: "User does not exists!" });
+        }
+
+        // Get the existing note from the database.
+        const currNote = await prisma.notes.findUnique({
+            where: {
+                slug,
+            },
+            select: {
+                slug: true,
+                title: true,
+                content: true,
+                updatedAt: true,
+                userID: true,
+            },
+        });
+
+        if (!currNote) {
+            return res.status(404).json({ data: "Note does not exists!" });
+        }
+
+        // Check the user owns the note or not.
+        if (currNote.userID !== user.id) {
+            return res
+                .status(401)
+                .json({ data: "Unauthorized Access Request!" });
+        }
+
+        // Send the note as response.
+        return res.status(200).json({ data: currNote });
+    } catch (error) {
+        return res.status(500).json({ data: error.message });
+    }
+});
+
+// API Route: /api/note/[slug]
 // Method: DELETE
 // Function: Deletes the note specified by the slug by the logged-in user.
 
